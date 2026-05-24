@@ -6,10 +6,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ── Database ──────────────────────────────────────────────────
-MYSQL_HOST     = os.getenv("MYSQL_HOST",     "localhost")
+MYSQL_HOST     = os.getenv("MYSQL_HOST",     "mysql-production-d62d.up.railway.app")
 MYSQL_PORT     = os.getenv("MYSQL_PORT",     "3306")
 MYSQL_USER     = os.getenv("MYSQL_USER",     "root")
-MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "root")
+MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "ZmXfldobQnbVPPbMNdBVSNJjoUhXMeAv")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "chatapplication")
 
 # ── JWT ───────────────────────────────────────────────────────
