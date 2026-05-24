@@ -1,9 +1,11 @@
 from jose import jwt
 from jose import JWTError
 from datetime import datetime, timedelta, timezone
+from core.config import (
+    SECRET_KEY,
+    ALGORITHM
+)
 
-SECRET_KEY = "CHANDRIKA$qazplm"
-ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 def create_access_token(data: dict):
