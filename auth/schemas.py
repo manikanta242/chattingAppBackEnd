@@ -12,3 +12,6 @@ class userSchema(BaseModel):
 class loginSchema(BaseModel):
     email: EmailStr
     password:str
+    
+class logoutSchema(BaseModel):
+    id: int

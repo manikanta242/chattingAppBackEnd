@@ -21,3 +21,28 @@ def create_access_token(data: dict):
     )
 
     return encoded_jwt
+
+# ============================================================
+#  DECODE TOKEN — returns payload dict
+# ============================================================
+def decode_token(token: str) -> dict | None:
+    try:
+        # ── Remove "Bearer " prefix if present ────────────────
+        if token.startswith("Bearer "):
+            token = token.split(" ")[1]
+
+        # ── Decode ────────────────────────────────────────────
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        print(f"📦 Decoded payload: {payload}")
+        return payload
+
+    except JWTError as e:
+        print(f"❌ Token decode error: {e}")
+        return None
+
+
+# ============================================================
+#  VERIFY TOKEN — returns True/False
+# ============================================================
+def verify_token(token: str) -> bool:
+    return decode_token(token) is not None

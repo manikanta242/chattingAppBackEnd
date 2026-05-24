@@ -1,8 +1,7 @@
 from fastapi import APIRouter
-from auth.schemas import userSchema, loginSchema
-from auth.services import registerService, userService, loginService
+from auth.schemas import userSchema, loginSchema, logoutSchema
+from auth.services import registerService, userService, loginService, logoutService
 router = APIRouter(
-    prefix="/auth",
     tags=['authentication']
 )
 
@@ -17,3 +16,7 @@ def user():
 @router.post('/login')
 def login(data:loginSchema):
     return loginService(data)
+
+@router.post("/logout")
+def logout(data:logoutSchema):
+    return logoutService(data)

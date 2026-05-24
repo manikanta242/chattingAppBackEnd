@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
-Base = declarative_base()
+from core.database import Base
 
 class Users(Base):
     __tablename__ = "users"
@@ -10,3 +9,4 @@ class Users(Base):
     phonenumber=Column(String(255), index=True)
     password= Column(String(255))
     location= Column(String(255)) 
+    status = Column(String(50), default="offline")

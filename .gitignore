@@ -1,8 +1,32 @@
-__pycache__
-venv
+# ✅ Virtual Environment — never push
+Scripts/
+Include/
+Lib/
+pyvenv.cfg
+*.exe
+
+# ✅ Python cache — never push
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# ✅ Environment variables — never push (contains secrets)
 .env
-dist
-.vscode
-lib
-Scripts
-include
+.env.local
+
+# ✅ Database files
+*.db
+*.sqlite3
+
+# ✅ IDE
+.vscode/
+.idea/
+
+# ✅ OS files
+.DS_Store
+Thumbs.db
+
+# ✅ Logs
+*.log
