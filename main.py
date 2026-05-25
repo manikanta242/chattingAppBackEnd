@@ -1,11 +1,10 @@
-import os
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from core.database import create_db
 from main_routes import api_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-
+import os
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -14,10 +13,8 @@ async def lifespan(app: FastAPI):
     yield
     print("App shutting down")
 
-
 app = FastAPI(lifespan=lifespan)
 
-# ── CORS ─────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
     allow_origins     = ["*"],
@@ -26,12 +23,10 @@ app.add_middleware(
     allow_headers     = ["*"],
 )
 
-# ✅ Root route — fixes 502 error
 @app.get("/")
 def root():
     return {"status": "running ✅"}
 
-# ── OpenAPI Schema ────────────────────────────────────────────
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
@@ -59,13 +54,10 @@ def custom_openapi():
     return app.openapi_schema
 
 app.openapi = custom_openapi
-
-# ── Routers ───────────────────────────────────────────────────
 app.include_router(api_router)
 
-# ── Run ───────────────────────────────────────────────────────
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", 8000))
+    port = int(os.getenv("PORT", 8080))
     print(f"✅ Starting on port: {port}")
     uvicorn.run("main:app", host="0.0.0.0", port=port)
