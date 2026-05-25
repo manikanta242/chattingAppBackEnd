@@ -1,35 +1,37 @@
+import os
 from fastapi import FastAPI
-from core.database import engine
 from contextlib import asynccontextmanager
 from core.database import create_db
 from main_routes import api_router
-from fastapi.middleware.cors import CORSMiddleware   # ← add this import
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # 🚀 Startup logic
     create_db()
     print("DB initialized")
-
-    yield  # app runs here
-    # 🛑 Shutdown logic (optional)
+    yield
     print("App shutting down")
+
 
 app = FastAPI(lifespan=lifespan)
 
-# ── CORS — must be added BEFORE include_router ───────────────
+# ── CORS ─────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],   # your Angular URL
-    allow_credentials=True,
-    allow_methods=["*"],                       # GET, POST, PUT, DELETE etc.
-    allow_headers=["*"],                       # Authorization, Content-Type etc.
+    allow_origins     = ["*"],
+    allow_credentials = True,
+    allow_methods     = ["*"],
+    allow_headers     = ["*"],
 )
 
+# ✅ Root route — fixes 502 error
+@app.get("/")
+def root():
+    return {"status": "running ✅"}
 
-# ✅ Custom OpenAPI schema with Bearer token support
+# ── OpenAPI Schema ────────────────────────────────────────────
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
@@ -41,16 +43,14 @@ def custom_openapi():
         routes      = app.routes,
     )
 
-    # ✅ Add Bearer token security scheme
     openapi_schema["components"]["securitySchemes"] = {
         "BearerAuth": {
-            "type"         : "http",
-            "scheme"       : "bearer",
-            "bearerFormat" : "JWT"
+            "type"        : "http",
+            "scheme"      : "bearer",
+            "bearerFormat": "JWT"
         }
     }
 
-    # ✅ Apply security globally to all routes
     for path in openapi_schema["paths"].values():
         for method in path.values():
             method["security"] = [{"BearerAuth": []}]
@@ -60,6 +60,12 @@ def custom_openapi():
 
 app.openapi = custom_openapi
 
-
+# ── Routers ───────────────────────────────────────────────────
 app.include_router(api_router)
 
+# ── Run ───────────────────────────────────────────────────────
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.getenv("PORT", 8080))
+    print(f"✅ Starting on port: {port}")
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
