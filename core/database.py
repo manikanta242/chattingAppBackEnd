@@ -1,28 +1,23 @@
+# core/database.py
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-from core.config import (
-    MYSQL_USER,
-    MYSQL_PASSWORD,
-    MYSQL_HOST,
-    MYSQL_PORT,
-    MYSQL_DATABASE
-)
+from dotenv import load_dotenv
 
-# ✅ Build DB URL from config
-DATABASE_URL = (
-    f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}"
-    f"@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
-)
+load_dotenv()
 
-# DATABASE_URL2 = "mysql+pymysql://root:root@localhost/chatapplication"
+# ✅ Get DATABASE_URL directly — no MYSQL_USER etc.
+DATABASE_URL = os.getenv("DATABASE_URL", "")
 
-Base = declarative_base()
-engine = create_engine(DATABASE_URL)
-sessionLocal = sessionmaker(autoflush=False, autocommit=False, bind=engine)
+# ✅ Fix prefix for SQLAlchemy
+if DATABASE_URL.startswith("mysql://"):
+    DATABASE_URL = DATABASE_URL.replace("mysql://", "mysql+pymysql://", 1)
+
+print(f"✅ DATABASE_URL exists: {bool(DATABASE_URL)}")
+
+engine       = create_engine(DATABASE_URL)
+sessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+Base         = declarative_base()
 
 def create_db():
-    import auth.models
-    import message.models
-    import friends.models
-
     Base.metadata.create_all(bind=engine)
