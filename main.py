@@ -1,10 +1,27 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
 from core.database import create_db
 from main_routes import api_router
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 import os
+
+# ── CSP Middleware ────────────────────────────────────────────
+class CSPMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        response.headers["Content-Security-Policy"] = (
+            "default-src *; "
+            "script-src * 'unsafe-inline' 'unsafe-eval'; "
+            "style-src * 'unsafe-inline'; "
+            "connect-src * ws: wss:; "
+            "img-src * data:; "
+            "font-src *; "
+        )
+        return response
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
