@@ -38,16 +38,8 @@ def pendingReqService(data: FriendRequest):
         .join(FromUser, FriendRequest.from_user == FromUser.id)
         .join(ToUser, FriendRequest.to_user == ToUser.id)
         .filter(
-            or_(
-                and_(
-                    FriendRequest.from_user == current_user,
-                    FriendRequest.status == "pending"
-                ),
-                and_(
-                    FriendRequest.to_user == current_user,
-                    FriendRequest.status == "pending"
-                )
-            )
+            FriendRequest.to_user == current_user,
+            FriendRequest.status == "pending"
         )
         .all()
     )
