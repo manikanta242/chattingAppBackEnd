@@ -181,12 +181,31 @@ async def websocket_endpoint(
                 # ✅ Echo back to sender
                 await websocket.send_json(response_payload)
 
+            # ── Handle typing ─────────────────────────────────────────
+            elif event_type == "typing":
+                is_typing = data.get("is_typing", False)
+                if receiver_id and receiver_id in active_connections:
+                    await active_connections[receiver_id].send_json({
+                        "type"        : "typing",
+                        "from_user_id": user_id,
+                        "from_name"   : sender_name,
+                        "is_typing"   : is_typing
+                    })
+
+            # ── Handle read ───────────────────────────────────────────
+            elif event_type == "read":
+                if receiver_id and receiver_id in active_connections:
+                    await active_connections[receiver_id].send_json({
+                        "type"        : "read",
+                        "from_user_id": user_id,
+                        "from_name"   : sender_name
+                    })
+
             else:
                 await websocket.send_json({
                     "type"   : "error",
                     "message": f"Unknown type: {event_type}"
                 })
-
     # ── Step 7: Disconnect ────────────────────────────────────
     except WebSocketDisconnect:
         # ✅ Remove from active

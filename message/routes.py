@@ -1,9 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from message.schemas import MessageListSchema, MessageSchema
 from friends.schemas import FriendSchema
 from message.services import sendMessageService, getmessageService
+from utils.commonAuth import get_current_user
 router = APIRouter(
-     tags=['messages']
+     tags=['messages'],
+     dependencies=[Depends(get_current_user)]  # ✅ protects all message routes
+
 )
 
 @router.post("/send_message")

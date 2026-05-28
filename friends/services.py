@@ -52,7 +52,7 @@ def pendingReqService(data: FriendRequest):
             friend = {
                 "request_id": req.id,
                 "friend_request": req.status,
-                "id": row.to_user_id,
+                "friend_id": row.to_user_id,
                 "name": row.to_user_name,
                 "email": row.to_user_email,
                 "status":row.to_user_status, 
@@ -62,7 +62,7 @@ def pendingReqService(data: FriendRequest):
             friend = {
                 "request_id": req.id,
                 "friend_request": req.status,
-                "id": row.from_user_id,
+                "friend_id": row.from_user_id,
                 "name": row.from_user_name,
                 "email": row.from_user_email,
                 "status":row.from_user_status, 
@@ -132,7 +132,7 @@ def friendsListService(data: FriendRequest):
             friend = {
                 "request_id": req.id,
                 "friend_request": req.status,
-                "id": row.to_user_id,
+                "friend_id": row.to_user_id,
                 "name": row.to_user_name,
                 "email": row.to_user_email,
                 "status":row.to_user_status, 
@@ -142,7 +142,7 @@ def friendsListService(data: FriendRequest):
             friend = {
                 "request_id": req.id,
                 "friend_request": req.status,
-                "id": row.from_user_id,
+                "friend_id": row.from_user_id,
                 "name": row.from_user_name,
                 "email": row.from_user_email,
                 "status":row.from_user_status, 
