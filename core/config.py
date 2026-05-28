@@ -18,12 +18,16 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# ✅ Single DATABASE_URL
+# ✅ Get DATABASE_URL directly — no MYSQL_USER etc.
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 
-# ✅ Fix prefix
+# ✅ Fix prefix for SQLAlchemy
 if DATABASE_URL.startswith("mysql://"):
     DATABASE_URL = DATABASE_URL.replace("mysql://", "mysql+pymysql://", 1)
+    
+# ✅ Fallback for local development
+if not DATABASE_URL:
+    DATABASE_URL = "mysql+pymysql://root:root@localhost:3306/chatapplication"
 
 # ── JWT ───────────────────────────────────────────
 SECRET_KEY = os.getenv("SECRET_KEY", "CHANDRIKA$qazplm")
