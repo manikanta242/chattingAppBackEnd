@@ -24,9 +24,9 @@ DEBUG      = os.getenv("DEBUG", "True") == "True"
 
 # ── EMAIL ───────────────────────────────────────────
 FRONTEND_URL  = os.getenv("FRONTEND_URL", "http://localhost:4200")
-MAIL_USERNAME = os.getenv("MAIL_USERNAME", "manikanta.edu2023@gmail.com")
-MAIL_PASSWORD = os.getenv("MAIL_PASSWORD","wzrmcrddczanjkil")
-MAIL_FROM     = os.getenv("MAIL_FROM","manikanta.edu2023@gmail.com")
+MAIL_USERNAME = os.getenv("MAIL_USERNAME", "chatapplication.notify@gmail.com")
+MAIL_PASSWORD = os.getenv("MAIL_PASSWORD","aczcfjbujnhacrtg")
+MAIL_FROM     = os.getenv("MAIL_FROM","chatapplication.notify@gmail.com")
 MAIL_PORT     = int(os.getenv("MAIL_PORT", 587))
 MAIL_SERVER   = os.getenv("MAIL_SERVER","smtp.gmail.com")
 
