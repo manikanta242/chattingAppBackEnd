@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ✅ Get DATABASE_URL directly — no MYSQL_USER etc.
-DATABASE_URL = os.getenv("DATABASE_URL", "")
+DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("MYSQLDATABASE_URL", "")
 
 # ✅ Fix prefix for SQLAlchemy
 if DATABASE_URL.startswith("mysql://"):
