@@ -32,7 +32,7 @@ async def registerService(req: userSchema, image: UploadFile = None):
             image_path = image_path.replace("\\", "/")
             with open(image_path, "wb") as f:
                 f.write(await image.read())
-            token = create_access_token(
+        token = create_access_token(
                 data = {"sub": req.email, "purpose": "email_verification"},
                 expires_delta = timedelta(hours=24)
             )
