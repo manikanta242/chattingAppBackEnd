@@ -5,19 +5,6 @@ from dotenv import load_dotenv
 # ✅ Load .env file
 load_dotenv()
 
-# # ── Database ──────────────────────────────────────────────────
-# MYSQL_HOST     = os.getenv("MYSQL_HOST",     "mysql.railway.internal")
-# MYSQL_PORT     = os.getenv("MYSQL_PORT",     "3306")
-# MYSQL_USER     = os.getenv("MYSQL_USER",     "root")
-# MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "ZmXfldobQnbVPPbMNdBVSNJjoUhXMeAv")
-# MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "chatapplication")
-
-# core/config.py
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
 # ✅ Get DATABASE_URL directly — no MYSQL_USER etc.
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 
@@ -31,8 +18,16 @@ if not DATABASE_URL:
 
 # ── JWT ───────────────────────────────────────────
 SECRET_KEY = os.getenv("SECRET_KEY", "CHANDRIKA$qazplm")
-ALGORITHM  = "HS256"
+ALGORITHM  = os.getenv("ALGORITHM","HS256")
 APP_PORT   = int(os.getenv("APP_PORT", "8000"))
 DEBUG      = os.getenv("DEBUG", "True") == "True"
+
+# ── EMAIL ───────────────────────────────────────────
+FRONTEND_URL  = os.getenv("FRONTEND_URL", "http://localhost:4200")
+MAIL_USERNAME = os.getenv("MAIL_USERNAME", "manikanta.edu2023@gmail.com")
+MAIL_PASSWORD = os.getenv("MAIL_PASSWORD","wzrmcrddczanjkil")
+MAIL_FROM     = os.getenv("MAIL_FROM","manikanta.edu2023@gmail.com")
+MAIL_PORT     = int(os.getenv("MAIL_PORT", 587))
+MAIL_SERVER   = os.getenv("MAIL_SERVER","smtp.gmail.com")
 
 print(f"✅ Config loaded")

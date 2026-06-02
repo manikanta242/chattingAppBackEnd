@@ -30,10 +30,13 @@ def pendingReqService(data: FriendRequest):
             FromUser.name.label("from_user_name"),
             FromUser.email.label("from_user_email"),
             FromUser.status.label("from_user_status"),
+            FromUser.image.label("from_user_image"),
+            
             ToUser.id.label("to_user_id"),
             ToUser.name.label("to_user_name"),
             ToUser.email.label("to_user_email"),
             ToUser.status.label("to_user_status"),
+            ToUser.image.label("to_user_image"),
         )
         .join(FromUser, FriendRequest.from_user == FromUser.id)
         .join(ToUser, FriendRequest.to_user == ToUser.id)
@@ -56,6 +59,7 @@ def pendingReqService(data: FriendRequest):
                 "name": row.to_user_name,
                 "email": row.to_user_email,
                 "status":row.to_user_status, 
+                "image":row.to_user_image,
                 
             }
         else:
@@ -66,6 +70,7 @@ def pendingReqService(data: FriendRequest):
                 "name": row.from_user_name,
                 "email": row.from_user_email,
                 "status":row.from_user_status, 
+                "image":row.from_user_image,
             }
         friends.append(friend)
 
@@ -102,10 +107,13 @@ def friendsListService(data: FriendRequest):
             FromUser.name.label("from_user_name"),
             FromUser.email.label("from_user_email"),
             FromUser.status.label("from_user_status"),
+            FromUser.image.label("from_user_image"),
+            
             ToUser.id.label("to_user_id"),
             ToUser.name.label("to_user_name"),
             ToUser.email.label("to_user_email"),
             ToUser.status.label("to_user_status"),
+            ToUser.image.label("to_user_image"),
         )
         .join(FromUser, FriendRequest.from_user == FromUser.id)
         .join(ToUser, FriendRequest.to_user == ToUser.id)
@@ -129,13 +137,14 @@ def friendsListService(data: FriendRequest):
     for row in rows:
         req = row.FriendRequest
         if req.from_user == current_user:
-            friend = {
+         friend = {
                 "request_id": req.id,
                 "friend_request": req.status,
                 "friend_id": row.to_user_id,
                 "name": row.to_user_name,
                 "email": row.to_user_email,
                 "status":row.to_user_status, 
+                "image":row.to_user_image,
                 
             }
         else:
@@ -146,6 +155,7 @@ def friendsListService(data: FriendRequest):
                 "name": row.from_user_name,
                 "email": row.from_user_email,
                 "status":row.from_user_status, 
+                "image":row.from_user_image,
             }
         friends.append(friend)
 
@@ -161,7 +171,8 @@ def registeredUsersService(current_user_id: int):
                 or_(
                     FriendRequest.from_user == current_user_id,
                     FriendRequest.to_user == current_user_id
-                )
+                ),
+                FriendRequest.status != "rejected"  # ✅ don't exclude rejected
             )
             .all()
         )
@@ -191,7 +202,8 @@ def registeredUsersService(current_user_id: int):
                     "name"    : user.name,
                     "email"   : user.email,
                     "status"  : user.status,
-                    "location": user.location
+                    "location": user.location,
+                    "image"   : user.image
                 }
                 for user in users
             ]
@@ -201,5 +213,29 @@ def registeredUsersService(current_user_id: int):
         print("Error:", e)
         raise HTTPException(status_code=500, detail="Internal server error")
 
+    finally:
+        db.close()
+
+def declineRequestService(data: FriendRequest):
+    db = sessionLocal()
+    try:
+        req = db.query(FriendRequest).filter(
+            FriendRequest.from_user == data.from_user,
+            FriendRequest.to_user   == data.to_user,
+            FriendRequest.status    == "pending"
+        ).first()
+
+        if not req:
+            raise HTTPException(status_code=404, detail="Request not found")
+
+        req.status = "rejected"
+        db.commit()
+        return {"response": "Friend request declined"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Internal server error")
     finally:
         db.close()

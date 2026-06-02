@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from friends.schemas import FriendRequestSchema, FriendReqPendingSchema, friendsListSchema
-from friends.services import connectService, friendReqStatusChangeService, pendingReqService, friendsListService, registeredUsersService
+from friends.services import connectService, friendReqStatusChangeService, pendingReqService, friendsListService, registeredUsersService, declineRequestService
 from utils.commonAuth import get_current_user
 from auth.models             import Users
 
@@ -28,3 +28,7 @@ def friendsList(req:friendsListSchema):
 @router.get('/registered-users')
 def registeredUsers(current_user: Users = Depends(get_current_user)):
     return registeredUsersService(current_user.id)
+
+@router.post("/decline")
+def declineRequest(req: FriendRequestSchema):
+    return declineRequestService(req)

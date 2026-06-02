@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean
 from core.database import Base
 
 class Users(Base):
@@ -10,3 +10,6 @@ class Users(Base):
     password= Column(String(255))
     location= Column(String(255)) 
     status = Column(String(50), default="offline")
+    image = Column(String(500), nullable=True)
+    is_active   = Column(Boolean, default=False) 
+    verify_token = Column(String(500), nullable=True) 
