@@ -1,6 +1,6 @@
-from fastapi import APIRouter, File, Form, UploadFile, Request, Depends
+from fastapi import APIRouter, File, Form, UploadFile, Request, Depends, Body
 from auth.schemas import userSchema, loginSchema, logoutSchema
-from auth.services import registerService, userService, loginService, logoutService, getProfileService, updateProfileService,verifyEmailService, forgotPasswordService, resetPasswordService
+from auth.services import registerService, userService, loginService, logoutService, getProfileService, updateProfileService,verifyEmailService, forgotPasswordService, resetPasswordService,resendEmailService
 from utils.commonAuth import get_current_user
 
 router = APIRouter(
@@ -34,6 +34,10 @@ async def register(
 @router.get("/verify-email")
 async def verify_email(token: str):
     return await verifyEmailService(token)
+
+@router.post("/resend-verification")
+async def resend_email(body: dict = Body(...)):
+    return await resendEmailService(body)
 
 @router.post("/forgot-password")
 async def forgot_password(email: str = Form(...)):

@@ -46,7 +46,6 @@ async def sendVerificationEmail(email: str, token: str):
     await fm.send_message(message)
     
 async def sendResetPasswordEmail(email: str, token: str):
-    from core.config import FRONTEND_URL
     reset_url = f"{FRONTEND_URL}/reset-password?token={token}"
 
     message = MessageSchema(
@@ -71,5 +70,19 @@ async def sendResetPasswordEmail(email: str, token: str):
         """,
         subtype = "html"
     )
+    fm = FastMail(conf)
+    await fm.send_message(message)
+    
+    
+async def resendEmalLink(email, token):
+    verification_url = f"{FRONTEND_URL}/verify-email?token={token}"
+    
+    message = MessageSchema(
+        subject="Verify your ChatApp email",
+        recipients=[email],
+        body=f"Click to verify your email: {verification_url}",
+        subtype="plain"
+    )
+
     fm = FastMail(conf)
     await fm.send_message(message)

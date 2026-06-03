@@ -3,7 +3,7 @@ from fastapi import UploadFile, HTTPException
 from sqlalchemy.exc import SQLAlchemyError
 from auth.models import Users
 from core.database import sessionLocal
-from core.mail import sendVerificationEmail, sendResetPasswordEmail
+from core.mail import sendVerificationEmail, sendResetPasswordEmail, resendEmalLink
 from utils.hashing import hashPassword, verifyPassword
 from utils.token import create_access_token
 from utils.token import decode_token
@@ -61,14 +61,14 @@ async def verifyEmailService(token: str):
     try:
         # decode token
         payload = decode_token(token)
-        email   = payload.get("sub")
-
-        if not email:
+        user_id   = payload.get("sub")
+        print("payload", payload)
+        if not user_id:
             raise HTTPException(status_code=400, detail="Invalid token")
 
         # find user
         user = db.query(Users).filter(
-            Users.email        == email,
+            Users.id == user_id,
             Users.verify_token == token
         ).first()
 
@@ -89,6 +89,28 @@ async def verifyEmailService(token: str):
         raise HTTPException(status_code=400, detail="Invalid or expired token")
     finally:
         db.close()
+        
+async def resendEmailService(body: dict):
+    db = sessionLocal()
+    email = body.get("email")
+    user = db.query(Users).filter(Users.email == email).first()
+
+    # Always return 200 — never reveal if email exists
+    if not user or user.is_active:
+        return {"message": "If that email exists, a new link was sent."}
+
+    # Generate fresh token
+    token = create_access_token(
+        {"sub": str(user.id)},
+        expires_delta=timedelta(hours=24)
+    )
+    # activate account
+    user.verify_token = token  # clear token after use
+    db.commit()
+    await resendEmalLink(email, token)
+
+    return {"message": "Verification email sent."}
+
         
 async def getProfileService(data: str):
     return {
