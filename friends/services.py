@@ -4,19 +4,35 @@ from core.database import sessionLocal
 from sqlalchemy import and_, or_, join
 from sqlalchemy.orm import aliased
 from fastapi import HTTPException
+from message.websockets import active_connections
+import asyncio
 
 
-def connectService(data : FriendRequest):
+async def connectService(data: FriendRequest):
     db = sessionLocal()
-    data = FriendRequest(
-        from_user = data.from_user,
-        to_user = data.to_user
-    )
-    db.add(data)
-    db.commit()
-    return {
-        "response": "request sent successfully"
-    }
+    try:
+        from_user_id = data.from_user
+        to_user_id   = data.to_user
+
+        # Fetch sender name for the notification
+        sender = db.query(Users).filter(Users.id == from_user_id).first()
+        sender_name = sender.name if sender else "Someone"
+
+        req = FriendRequest(from_user=from_user_id, to_user=to_user_id)
+        db.add(req)
+        db.commit()
+
+        # Push real-time WS notification to receiver if online
+        if to_user_id in active_connections:
+            await active_connections[to_user_id].send_json({
+                "type":           "friend_request",
+                "from_user_id":   from_user_id,
+                "from_user_name": sender_name,
+            })
+
+        return {"response": "request sent successfully"}
+    finally:
+        db.close()
     
 def pendingReqService(data: FriendRequest):
     db = sessionLocal()

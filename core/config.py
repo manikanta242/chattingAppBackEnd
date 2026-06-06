@@ -29,5 +29,6 @@ MAIL_PASSWORD = os.getenv("MAIL_PASSWORD","aczcfjbujnhacrtg")
 MAIL_FROM     = os.getenv("MAIL_FROM","chatapplication.notify@gmail.com")
 MAIL_PORT     = int(os.getenv("MAIL_PORT", 587))
 MAIL_SERVER   = os.getenv("MAIL_SERVER","smtp.gmail.com")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 print(f"✅ Config loaded")

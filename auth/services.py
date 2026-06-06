@@ -1,6 +1,7 @@
 # auth/services.py
 from fastapi import UploadFile, HTTPException
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import and_, or_, join
 from auth.models import Users
 from core.database import sessionLocal
 from core.mail import sendVerificationEmail, sendResetPasswordEmail, resendEmalLink
@@ -62,14 +63,22 @@ async def verifyEmailService(token: str):
         # decode token
         payload = decode_token(token)
         user_id   = payload.get("sub")
-        print("payload", payload)
+        print("payload", user_id)
         if not user_id:
             raise HTTPException(status_code=400, detail="Invalid token")
 
         # find user
-        user = db.query(Users).filter(
-            Users.id == user_id,
-            Users.verify_token == token
+        user = db.query(Users).filter(           
+             or_(
+                and_(
+                    Users.id == user_id,
+                    Users.verify_token == token
+                ),
+                and_(
+                    Users.email == user_id,
+                    Users.verify_token == token
+                )
+            )
         ).first()
 
         if not user:

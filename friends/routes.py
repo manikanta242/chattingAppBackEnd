@@ -10,8 +10,8 @@ router = APIRouter(
 )
 
 @router.post("/connect")
-def connect(req: FriendRequestSchema):
-    return connectService(req)
+async def connect(req: FriendRequestSchema):
+    return await connectService(req)
 
 @router.post("/pending-request")
 def pendingRequest(req: FriendReqPendingSchema):
